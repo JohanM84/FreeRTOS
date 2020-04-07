@@ -1,17 +1,16 @@
 /*
 ** ###################################################################
 **     Processors:          LPC55S69JBD100_cm33_core0
-**                          LPC55S69JBD64_cm33_core0
-**                          LPC55S69JEV98_cm33_core0
+**                          LPC55S69JET98_cm33_core0
 **
 **     Compilers:           GNU C Compiler
 **                          IAR ANSI C/C++ Compiler for ARM
 **                          Keil ARM C/C++ Compiler
 **                          MCUXpresso Compiler
 **
-**     Reference manual:    LPC55S6x/LPC55S2x/LPC552x User manual(UM11126) Rev.1.3  16 May 2019
-**     Version:             rev. 1.1, 2019-05-16
-**     Build:               b190830
+**     Reference manual:    LPC55xx/LPC55Sxx User manual Rev.0.4  25 Sep 2018
+**     Version:             rev. 1.0, 2018-08-22
+**     Build:               b181219
 **
 **     Abstract:
 **         Provides a system configuration function and a global variable that
@@ -19,7 +18,7 @@
 **         the oscillator (PLL) that is part of the microcontroller device.
 **
 **     Copyright 2016 Freescale Semiconductor, Inc.
-**     Copyright 2016-2019 NXP
+**     Copyright 2016-2018 NXP
 **     All rights reserved.
 **
 **     SPDX-License-Identifier: BSD-3-Clause
@@ -30,16 +29,14 @@
 **     Revisions:
 **     - rev. 1.0 (2018-08-22)
 **         Initial version based on v0.2UM
-**     - rev. 1.1 (2019-05-16)
-**         Initial A1 version based on v1.3UM
 **
 ** ###################################################################
 */
 
 /*!
  * @file LPC55S69_cm33_core0
- * @version 1.1
- * @date 2019-05-16
+ * @version 1.0
+ * @date 2018-08-22
  * @brief Device specific configuration file for LPC55S69_cm33_core0 (header
  *        file)
  *
@@ -49,7 +46,7 @@
  */
 
 #ifndef _SYSTEM_LPC55S69_cm33_core0_H_
-#define _SYSTEM_LPC55S69_cm33_core0_H_ /**< Symbol preventing repeated inclusion */
+#define _SYSTEM_LPC55S69_cm33_core0_H_           /**< Symbol preventing repeated inclusion */
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,12 +54,13 @@ extern "C" {
 
 #include <stdint.h>
 
-#define DEFAULT_SYSTEM_CLOCK 12000000u /* Default System clock value */
-#define CLK_RTC_32K_CLK 32768u         /* RTC oscillator 32 kHz output (32k_clk */
-#define CLK_FRO_12MHZ 12000000u        /* FRO 12 MHz (fro_12m) */
-#define CLK_FRO_48MHZ 48000000u        /* FRO 48 MHz (fro_48m) */
-#define CLK_FRO_96MHZ 96000000u        /* FRO 96 MHz (fro_96m) */
-#define CLK_CLK_IN 16000000u           /* Default CLK_IN pin clock */
+#define DEFAULT_SYSTEM_CLOCK           12000000u           /* Default System clock value */
+#define CLK_RTC_32K_CLK                   32768u           /* RTC oscillator 32 kHz output (32k_clk */
+#define CLK_FRO_12MHZ                  12000000u           /* FRO 12 MHz (fro_12m) */
+#define CLK_FRO_48MHZ                  48000000u           /* FRO 48 MHz (fro_48m) */
+#define CLK_FRO_96MHZ                  96000000u           /* FRO 96 MHz (fro_96m) */
+#define CLK_CLK_IN                     16000000u           /* Default CLK_IN pin clock */
+
 
 /**
  * @brief System clock frequency (core clock)
@@ -82,7 +80,7 @@ extern uint32_t SystemCoreClock;
  * microcontroller device. For systems with variable clock speed it also updates
  * the variable SystemCoreClock. SystemInit is called from startup_device file.
  */
-void SystemInit(void);
+void SystemInit (void);
 
 /**
  * @brief Updates the SystemCoreClock variable.
@@ -91,7 +89,7 @@ void SystemInit(void);
  * execution. SystemCoreClockUpdate() evaluates the clock register settings and calculates
  * the current core clock.
  */
-void SystemCoreClockUpdate(void);
+void SystemCoreClockUpdate (void);
 
 /**
  * @brief SystemInit function hook.
@@ -103,10 +101,10 @@ void SystemCoreClockUpdate(void);
  * NOTE: No global r/w variables can be used in this hook function because the
  * initialization of these variables happens after this function.
  */
-void SystemInitHook(void);
+void SystemInitHook (void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _SYSTEM_LPC55S69_cm33_core0_H_ */
+#endif  /* _SYSTEM_LPC55S69_cm33_core0_H_ */

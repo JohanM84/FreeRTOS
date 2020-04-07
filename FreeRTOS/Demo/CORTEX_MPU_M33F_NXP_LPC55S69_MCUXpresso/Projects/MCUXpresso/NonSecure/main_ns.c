@@ -1,5 +1,5 @@
 /*
- * FreeRTOS Kernel V10.3.0
+ * FreeRTOS Kernel V10.3.1
  * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -173,7 +173,6 @@ void MemManage_Handler( void )
 		" ldr r1, handler_address_const						\n"
 		" bx r1												\n"
 		"													\n"
-		" .align 4											\n"
 		" handler_address_const: .word vHandleMemoryFault	\n"
 	);
 }

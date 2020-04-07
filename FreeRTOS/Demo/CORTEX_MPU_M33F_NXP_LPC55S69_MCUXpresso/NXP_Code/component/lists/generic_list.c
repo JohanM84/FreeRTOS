@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 NXP
+ * Copyright 2018 NXP
  * All rights reserved.
  *
  *
@@ -14,102 +14,81 @@
 #include "fsl_common.h"
 #include "generic_list.h"
 
-static list_status_t LIST_Scan(list_handle_t list, list_element_handle_t newElement)
-{
-    list_element_handle_t element = list->head;
-
-    while (element != NULL)
-    {
-        if (element == newElement)
-        {
-            return kLIST_DuplicateError;
-        }
-        element = element->next;
-    }
-    return kLIST_Ok;
-}
-
 /*! *********************************************************************************
 *************************************************************************************
 * Public functions
 *************************************************************************************
 ********************************************************************************** */
 /*! *********************************************************************************
- * \brief     Initialises the list descriptor.
- *
- * \param[in] list - LIST_ handle to init.
- *            max - Maximum number of elements in list. 0 for unlimited.
- *
- * \return void.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Initialises the list descriptor.
+*
+* \param[in] list - LIST_ handle to init.
+*            max - Maximum number of elements in list. 0 for unlimited.
+*
+* \return void.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 void LIST_Init(list_handle_t list, uint32_t max)
 {
     list->head = NULL;
     list->tail = NULL;
-    list->max  = (uint16_t)max;
+    list->max = max;
     list->size = 0;
 }
 
 /*! *********************************************************************************
- * \brief     Gets the list that contains the given element.
- *
- * \param[in] element - Handle of the element.
- *
- * \return NULL if element is orphan.
- *         Handle of the list the element is inserted into.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Gets the list that contains the given element.
+*
+* \param[in] element - Handle of the element.
+*
+* \return NULL if element is orphan.
+*         Handle of the list the element is inserted into.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 list_handle_t LIST_GetList(list_element_handle_t element)
 {
     return element->list;
 }
 
 /*! *********************************************************************************
- * \brief     Links element to the tail of the list.
- *
- * \param[in] list - ID of list to insert into.
- *            element - element to add
- *
- * \return kLIST_Full if list is full.
- *         kLIST_Ok if insertion was successful.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Links element to the tail of the list.
+*
+* \param[in] list - ID of list to insert into.
+*            element - element to add
+*
+* \return kLIST_Full if list is full.
+*         kLIST_Ok if insertion was successful.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 list_status_t LIST_AddTail(list_handle_t list, list_element_handle_t element)
 {
     uint32_t regPrimask = DisableGlobalIRQ();
 
-    if ((list->max != 0U) && (list->max == list->size))
+    if ((list->max != 0) && (list->max == list->size))
     {
         EnableGlobalIRQ(regPrimask);
         return kLIST_Full;
     }
 
-    if (kLIST_DuplicateError == LIST_Scan(list, element))
-    {
-        EnableGlobalIRQ(regPrimask);
-        return kLIST_DuplicateError;
-    }
-
-    if (list->size == 0U)
+    if (list->size == 0)
     {
         list->head = element;
     }
@@ -120,7 +99,7 @@ list_status_t LIST_AddTail(list_handle_t list, list_element_handle_t element)
     element->prev = list->tail;
     element->next = NULL;
     element->list = list;
-    list->tail    = element;
+    list->tail = element;
     list->size++;
 
     EnableGlobalIRQ(regPrimask);
@@ -128,38 +107,32 @@ list_status_t LIST_AddTail(list_handle_t list, list_element_handle_t element)
 }
 
 /*! *********************************************************************************
- * \brief     Links element to the head of the list.
- *
- * \param[in] list - ID of list to insert into.
- *            element - element to add
- *
- * \return kLIST_Full if list is full.
- *         kLIST_Ok if insertion was successful.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Links element to the head of the list.
+*
+* \param[in] list - ID of list to insert into.
+*            element - element to add
+*
+* \return kLIST_Full if list is full.
+*         kLIST_Ok if insertion was successful.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 list_status_t LIST_AddHead(list_handle_t list, list_element_handle_t element)
 {
     uint32_t regPrimask = DisableGlobalIRQ();
 
-    if ((list->max != 0U) && (list->max == list->size))
+    if ((list->max != 0) && (list->max == list->size))
     {
         EnableGlobalIRQ(regPrimask);
         return kLIST_Full;
     }
 
-    if (kLIST_DuplicateError == LIST_Scan(list, element))
-    {
-        EnableGlobalIRQ(regPrimask);
-        return kLIST_DuplicateError;
-    }
-
-    if (list->size == 0U)
+    if (list->size == 0)
     {
         list->tail = element;
     }
@@ -170,7 +143,7 @@ list_status_t LIST_AddHead(list_handle_t list, list_element_handle_t element)
     element->next = list->head;
     element->prev = NULL;
     element->list = list;
-    list->head    = element;
+    list->head = element;
     list->size++;
 
     EnableGlobalIRQ(regPrimask);
@@ -178,27 +151,27 @@ list_status_t LIST_AddHead(list_handle_t list, list_element_handle_t element)
 }
 
 /*! *********************************************************************************
- * \brief     Unlinks element from the head of the list.
- *
- * \param[in] list - ID of list to remove from.
- *
- * \return NULL if list is empty.
- *         ID of removed element(pointer) if removal was successful.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Unlinks element from the head of the list.
+*
+* \param[in] list - ID of list to remove from.
+*
+* \return NULL if list is empty.
+*         ID of removed element(pointer) if removal was successful.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 list_element_handle_t LIST_RemoveHead(list_handle_t list)
 {
     list_element_handle_t element;
 
     uint32_t regPrimask = DisableGlobalIRQ();
 
-    if ((NULL == list) || (list->size == 0U))
+    if ((NULL == list) || (list->size == 0))
     {
         EnableGlobalIRQ(regPrimask);
         return NULL; /*LIST_ is empty*/
@@ -206,7 +179,7 @@ list_element_handle_t LIST_RemoveHead(list_handle_t list)
 
     element = list->head;
     list->size--;
-    if (list->size == 0U)
+    if (list->size == 0)
     {
         list->tail = NULL;
     }
@@ -214,7 +187,7 @@ list_element_handle_t LIST_RemoveHead(list_handle_t list)
     {
         element->next->prev = NULL;
     }
-    list->head    = element->next; /*Is NULL if element is head*/
+    list->head = element->next; /*Is NULL if element is head*/
     element->list = NULL;
 
     EnableGlobalIRQ(regPrimask);
@@ -222,80 +195,80 @@ list_element_handle_t LIST_RemoveHead(list_handle_t list)
 }
 
 /*! *********************************************************************************
- * \brief     Gets head element ID.
- *
- * \param[in] list - ID of list.
- *
- * \return NULL if list is empty.
- *         ID of head element if list is not empty.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Gets head element ID.
+*
+* \param[in] list - ID of list.
+*
+* \return NULL if list is empty.
+*         ID of head element if list is not empty.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 list_element_handle_t LIST_GetHead(list_handle_t list)
 {
     return list->head;
 }
 
 /*! *********************************************************************************
- * \brief     Gets next element ID.
- *
- * \param[in] element - ID of the element.
- *
- * \return NULL if element is tail.
- *         ID of next element if exists.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Gets next element ID.
+*
+* \param[in] element - ID of the element.
+*
+* \return NULL if element is tail.
+*         ID of next element if exists.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 list_element_handle_t LIST_GetNext(list_element_handle_t element)
 {
     return element->next;
 }
 
 /*! *********************************************************************************
- * \brief     Gets previous element ID.
- *
- * \param[in] element - ID of the element.
- *
- * \return NULL if element is head.
- *         ID of previous element if exists.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Gets previous element ID.
+*
+* \param[in] element - ID of the element.
+*
+* \return NULL if element is head.
+*         ID of previous element if exists.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 list_element_handle_t LIST_GetPrev(list_element_handle_t element)
 {
     return element->prev;
 }
 
 /*! *********************************************************************************
- * \brief     Unlinks an element from its list.
- *
- * \param[in] element - ID of the element to remove.
- *
- * \return kLIST_OrphanElement if element is not part of any list.
- *         kLIST_Ok if removal was successful.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Unlinks an element from its list.
+*
+* \param[in] element - ID of the element to remove.
+*
+* \return kLIST_OrphanElement if element is not part of any list.
+*         kLIST_Ok if removal was successful.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 list_status_t LIST_RemoveElement(list_element_handle_t element)
 {
     if (element->list == NULL)
@@ -329,23 +302,23 @@ list_status_t LIST_RemoveElement(list_element_handle_t element)
 }
 
 /*! *********************************************************************************
- * \brief     Links an element in the previous position relative to a given member
- *            of a list.
- *
- * \param[in] element - ID of a member of a list.
- *            newElement - new element to insert before the given member.
- *
- * \return kLIST_OrphanElement if element is not part of any list.
- *         kLIST_Full if list is full.
- *         kLIST_Ok if insertion was successful.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Links an element in the previous position relative to a given member
+*            of a list.
+*
+* \param[in] element - ID of a member of a list.
+*            newElement - new element to insert before the given member.
+*
+* \return kLIST_OrphanElement if element is not part of any list.
+*         kLIST_Full if list is full.
+*         kLIST_Ok if insertion was successful.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 list_status_t LIST_AddPrevElement(list_element_handle_t element, list_element_handle_t newElement)
 {
     if (element->list == NULL)
@@ -354,16 +327,10 @@ list_status_t LIST_AddPrevElement(list_element_handle_t element, list_element_ha
     }
     uint32_t regPrimask = DisableGlobalIRQ();
 
-    if ((element->list->max != 0U) && (element->list->max == element->list->size))
+    if ((element->list->max != 0) && (element->list->max == element->list->size))
     {
         EnableGlobalIRQ(regPrimask);
         return kLIST_Full;
-    }
-
-    if (kLIST_DuplicateError == LIST_Scan(element->list, newElement))
-    {
-        EnableGlobalIRQ(regPrimask);
-        return kLIST_DuplicateError;
     }
 
     if (element->prev == NULL) /*Element is list head*/
@@ -378,46 +345,46 @@ list_status_t LIST_AddPrevElement(list_element_handle_t element, list_element_ha
     element->list->size++;
     newElement->next = element;
     newElement->prev = element->prev;
-    element->prev    = newElement;
+    element->prev = newElement;
 
     EnableGlobalIRQ(regPrimask);
     return kLIST_Ok;
 }
 
 /*! *********************************************************************************
- * \brief     Gets the current size of a list.
- *
- * \param[in] list - ID of the list.
- *
- * \return Current size of the list.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Gets the current size of a list.
+*
+* \param[in] list - ID of the list.
+*
+* \return Current size of the list.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 uint32_t LIST_GetSize(list_handle_t list)
 {
     return list->size;
 }
 
 /*! *********************************************************************************
- * \brief     Gets the number of free places in the list.
- *
- * \param[in] list - ID of the list.
- *
- * \return Available size of the list.
- *
- * \pre
- *
- * \post
- *
- * \remarks
- *
- ********************************************************************************** */
+* \brief     Gets the number of free places in the list.
+*
+* \param[in] list - ID of the list.
+*
+* \return Available size of the list.
+*
+* \pre
+*
+* \post
+*
+* \remarks
+*
+********************************************************************************** */
 uint32_t LIST_GetAvailableSize(list_handle_t list)
 {
-    return ((uint32_t)list->max - (uint32_t)list->size);
+    return (list->max - list->size);
 }
