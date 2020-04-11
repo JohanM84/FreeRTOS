@@ -84,7 +84,7 @@ choice.  See http://www.freertos.org/a00111.html for an explanation. */
 #define mainREGION_3_SIZE	7607
 
 
-int ticks = 0;
+unsigned long long ticks = 0;
 
 /*
  * Only the comprehensive demo uses application hook (callback) functions.  See
@@ -152,7 +152,7 @@ static void matrix_task()
 			b[i][j] = 2.6;
 		}
 	}
-	int start;
+	unsigned long long start;
 	while (1) {
 		start = ticks;
 		/*
@@ -180,16 +180,16 @@ static void matrix_task()
 			}
 		}
 		vTaskDelay(100 / portTICK_PERIOD_MS);
-		printf("Matrix task exec time: %d ms\n", (ticks - start) / portTICK_PERIOD_MS);
+		printf("Matrix task exec time: %lld ms\n", (ticks - start) / portTICK_PERIOD_MS);
 	}
 }
 
-int comms_task_exe_time = 0;
+unsigned long long comms_task_exe_time = 0;
 xTaskHandle communication_handle;
 
 static void communication_task()
 {
-	int start;
+	unsigned long long start;
 	while (1) {
 		start = ticks;
 		printf("Sending data...\n");
@@ -199,7 +199,7 @@ static void communication_task()
 		fflush(stdout);
 		vTaskDelay(100 / portTICK_PERIOD_MS);
 		comms_task_exe_time = ticks - start;
-		printf("Comms task exec time: %d ms\n", comms_task_exe_time / portTICK_PERIOD_MS);
+		printf("Comms task exec time: %lld ms\n", comms_task_exe_time / portTICK_PERIOD_MS);
 	}
 }
 /* priority_set_task:
