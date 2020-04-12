@@ -239,56 +239,27 @@ static void deferrable_server() {
 	xTaskHandle matrix_handle = xTaskGetHandle("Matrix");
 	char name[configMAX_TASK_NAME_LEN];
 	eTaskState matrix_state, aperiodic_state;
+	
 	while (1) {
-		while (xQueueReceive(serv_q, name, 0) == pdTRUE) {
-			printf("[%09lld] Popped %s off the queue\n", ticks / portTICK_PERIOD_MS, name);
-			xTaskHandle aperiodic_handle = xTaskGetHandle(name);
-			/*Something on the queue*/
-
-			matrix_state = eTaskGetState(matrix_handle);
-			aperiodic_state = eTaskGetState(aperiodic_handle);
-			if (matrix_state == eRunning) {
-				/*Matrix Task is running, put this back in the queue*/
-				if (aperiodic_state != eDeleted) {
-					vTaskSuspend(aperiodic_handle);
-					xQueueSend(serv_q, name, 10);
-					printf("[%09lld] Matrix task running, pushed %s on the queue\n", ticks / portTICK_PERIOD_MS, name);
-				}
-				break;
-			}
-
-			if ((aperiodic_state == eSuspended) || (aperiodic_state == eReady)) {
-				/*Resume aperiodic job because matrix job is not running*/
-				printf("[%09lld] Matrix task not running, %s resumed\n", ticks / portTICK_PERIOD_MS, name);
-				vTaskPrioritySet(aperiodic_handle, uxTaskPriorityGet(NULL) - 1);
-				vTaskResume(aperiodic_handle);
-				break;
-			}
-		}
-#if 0
-		printf("[%09lld] Matrix task is ", ticks / portTICK_PERIOD_MS);
 		matrix_state = eTaskGetState(matrix_handle);
-		switch (matrix_state) {
-		case eReady:
-			printf("Ready");
-			break;
-		case eRunning:
-			printf("Running");
-			break;
-		case eSuspended:
-			printf("Suspended");
-			break;
-		case eBlocked:
-			printf("Blocked");
-			break;
-		case eDeleted:
-			printf("Deleted");
-			break;
-		default:
-			break;
+
+		while (matrix_state != eRunning) {
+			while (xQueueReceive(serv_q, name, 0) == pdTRUE) {
+				/*Something on the queue*/
+				printf("[%09lld] Popped %s off the queue\n", ticks / portTICK_PERIOD_MS, name);
+				xTaskHandle aperiodic_handle = xTaskGetHandle(name);
+				aperiodic_state = eTaskGetState(aperiodic_handle);
+				if ((aperiodic_state == eSuspended) || (aperiodic_state == eReady)) {
+					/*Resume aperiodic job because matrix job is not running*/
+					printf("[%09lld] Matrix task not running, %s resumed\n", ticks / portTICK_PERIOD_MS, name);
+					vTaskPrioritySet(aperiodic_handle, uxTaskPriorityGet(NULL) - 1);
+					vTaskResume(aperiodic_handle);
+					break;
+				}
+			}
+			vTaskDelay(10 / portTICK_PERIOD_MS);
+			matrix_state = eTaskGetState(matrix_handle);
 		}
-		printf("\n");
-#endif
 		vTaskDelay(10 / portTICK_PERIOD_MS);
 	}
 }
